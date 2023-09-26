@@ -68,7 +68,7 @@ spark_df = spark.createDataFrame(df)
 
 session = spark.builder.getOrCreate()
 session.conf.set(
-"fs.azure.account.key.yassineessadidatalakeg2.blob.core.windows.net", "gWYEfszXt9mbYAwRbZP0hE3Bo1rZUFJoFw71LWPsENPoEPb5CzWeN28ukbQV6/o3vm6mlyg31lim+ASt3uGX5A==")
+"fs.azure.account.key.dbstoragelamiaeelhoqni.blob.core.windows.net", "1vw5+qnniUd6TK3I1FBRKUp1vWbtdmuLLrp5fHNlgJpdC/C35Le7kq9MvPZ8ski6uQDw12kT0fbZ+AStZiP1OQ==")
 spark_df.toPandas()
 
-spark_df.coalesce(1).write.format("csv").option('header', True).mode("overwrite").save("wasbs://data@yassineessadidatalakeg2.blob.core.windows.net/public_transport_data/raw")
+spark_df.coalesce(1).write.format("csv").option('header', True).mode("overwrite").save("wasbs://mycontainer@dbstoragelamiaeelhoqni.blob.core.windows.net/public_transport_data/raw")

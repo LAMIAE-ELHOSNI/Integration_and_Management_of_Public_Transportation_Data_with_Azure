@@ -13,11 +13,10 @@ from pyspark.sql.functions import col
 
 # COMMAND ----------
 
-#Connection configuration
 spark.conf.set(
-"fs.azure.account.key.yassineessadidatalakeg2.blob.core.windows.net", "gWYEfszXt9mbYAwRbZP0hE3Bo1rZUFJoFw71LWPsENPoEPb5CzWeN28ukbQV6/o3vm6mlyg31lim+ASt3uGX5A==")
+"fs.azure.account.key.dbstoragelamiaeelhoqni.blob.core.windows.net", "1vw5+qnniUd6TK3I1FBRKUp1vWbtdmuLLrp5fHNlgJpdC/C35Le7kq9MvPZ8ski6uQDw12kT0fbZ+AStZiP1OQ==")
 
-spark_df = spark.read.format('csv').option('header', True).load("wasbs://data@yassineessadidatalakeg2.blob.core.windows.net/public_transport_data/raw/*.csv")
+spark_df = spark.read.format('csv').option('header', True).load("wasbs://mycontainer@dbstoragelamiaeelhoqni.blob.core.windows.net/public_transport_data/raw/*.csv")
 
 display(spark_df)
 
@@ -46,4 +45,21 @@ spark_df = spark_df.withColumn("Duration (M)", ((col("ArrivalTime").cast("timest
 spark_df = spark_df.withColumn("Duration (H)", ((col("ArrivalTime").cast("timestamp") - col("DepartureTime").cast("timestamp")) / 3600).cast("int"))
 
 
+display(spark_df)
+
+# COMMAND ----------
+
+
+# Assuming you have a DataFrame named "spark_df" with "Duration (M)" column
+# Define the categorization logic using "when" function
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, when
+spark_df = spark_df.withColumn("DelayCategory", 
+    when(col("Duration (M)") <= 0, "Pas de Retard")
+    .when((col("Duration (M)") > 0) & (col("Duration (M)") <= 10), "Retard Court")
+    .when((col("Duration (M)") > 10) & (col("Duration (M)") <= 20), "Retard Moyen")
+    .when(col("Duration (M)") > 20, "Long Retard")
+    .otherwise("Unknown"))
+
+# Show the DataFrame with the new "DelayCategory" column
 display(spark_df)
