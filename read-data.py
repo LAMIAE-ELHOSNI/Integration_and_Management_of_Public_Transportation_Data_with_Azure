@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %md 
-# MAGIC #imports
+# MAGIC #Import necessary PySpark functions for data manipulation
 # MAGIC
 
 # COMMAND ----------
@@ -16,6 +16,15 @@ from pyspark.sql.functions import sum, avg, max
 
 # COMMAND ----------
 
+# MAGIC %md 
+# MAGIC #This code reads and processes public transport data files by month, handling date conversions, duration calculations, delay categorization, and storage of the processed data.
+# MAGIC
+
+# COMMAND ----------
+
+
+spark.conf.set(
+    "fs.azure.account.key.dbstoragelamiaeelhosni.blob.core.windows.net", "vWfglH1IE6wtJdzxrBJJh9LEVcj7ShKFu3DQzApnsTrSQnoiJ+8AgknMwIb0MgrYk0JhYFE1jNVv+AStAHiAEg==")
 def GetFilesByMonth(Month):
     spark.conf.set(
     "fs.azure.account.key.dbstoragelamiaeelhosni.blob.core.windows.net", "vWfglH1IE6wtJdzxrBJJh9LEVcj7ShKFu3DQzApnsTrSQnoiJ+8AgknMwIb0MgrYk0JhYFE1jNVv+AStAHiAEg==")
@@ -49,6 +58,12 @@ def GetFilesByMonth(Month):
 
 # COMMAND ----------
 
+# MAGIC %md 
+# MAGIC #This code checks for unprocessed files in the "raw" directory and invokes the "GetFilesByMonth" function to process them, ensuring that only two files are processed.
+# MAGIC
+
+# COMMAND ----------
+
 raw = "wasbs://mycontainer@dbstoragelamiaeelhosni.blob.core.windows.net/public_transport_data/raw/Year=2023"
 processed = "wasbs://mycontainer@dbstoragelamiaeelhosni.blob.core.windows.net/public_transport_data/processed/Year=2023"
 
@@ -65,31 +80,43 @@ for r in files_raw:
 
 # COMMAND ----------
 
-# Analyse des Passagers: Identifier les heures de pointe et hors pointe en fonction du nombre de passagers.
-# from pyspark.sql.functions import hour
+# MAGIC %md 
+# MAGIC #Identifying peak and off-peak hours based on passenger counts
+# MAGIC
 
-# # Group by the hour of departure and count the number of passengers for each hour
-# passenger_analysis = spark_df.groupBy(hour("DepartureTime").alias("HourOfDay")).agg({"Passengers": "sum"})
+# COMMAND ----------
 
-# # Order the results by passenger count in descending order
-# passenger_analysis = passenger_analysis.orderBy("sum(Passengers)", ascending=False)
+Analyse des Passagers: Identifier les heures de pointe et hors pointe en fonction du nombre de passagers.
+from pyspark.sql.functions import hour
 
-# # Show the results
-# passenger_analysis.show()
+# Group by the hour of departure and count the number of passengers for each hour
+passenger_analysis = spark_df.groupBy(hour("DepartureTime").alias("HourOfDay")).agg({"Passengers": "sum"})
+
+# Order the results by passenger count in descending order
+passenger_analysis = passenger_analysis.orderBy("sum(Passengers)", ascending=False)
+
+# Show the results
+passenger_analysis.show()
 
 
 # COMMAND ----------
 
-# Analyse des Itinéraires: Calculer le retard moyen, le nombre moyen de passagers et le nombre total de voyages pour chaque itinéraire.
+# MAGIC %md 
+# MAGIC # Calculating average delay, average passenger count, and total trips for each route.
+# MAGIC
+
+# COMMAND ----------
+
+Analyse des Itinéraires: Calculer le retard moyen, le nombre moyen de passagers et le nombre total de voyages pour chaque itinéraire.
 
 
-# # Group by l'itinéraire (Route)
-# route_analysis = spark_df.groupBy("Route").agg(
-#     {"Delay": "avg", "Passengers": "avg", "Route": "count"}
-# ).withColumnRenamed("avg(Delay)", "AverageDelay").withColumnRenamed("avg(Passengers)", "AveragePassengers").withColumnRenamed("count(Route)", "TotalTrips")
+# Group by l'itinéraire (Route)
+route_analysis = spark_df.groupBy("Route").agg(
+    {"Delay": "avg", "Passengers": "avg", "Route": "count"}
+).withColumnRenamed("avg(Delay)", "AverageDelay").withColumnRenamed("avg(Passengers)", "AveragePassengers").withColumnRenamed("count(Route)", "TotalTrips")
 
-# # Afficher l'analyse des itinéraires
-# route_analysis.show()
+# Afficher l'analyse des itinéraires
+route_analysis.show()
 
 
 # COMMAND ----------
