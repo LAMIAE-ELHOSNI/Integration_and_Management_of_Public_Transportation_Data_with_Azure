@@ -1,9 +1,21 @@
 # Databricks notebook source
+# MAGIC %md 
+# MAGIC #Import necessary library
+# MAGIC
+
+# COMMAND ----------
+
 from pyspark.sql.functions import year, month,dayofmonth,dayofweek
 from pyspark.sql.types import IntegerType
 import random
 import pandas as ps 
 from datetime import datetime, timedelta
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC #generates synthetic public transport data for January 2023 with random variations in operating hours, duration, delays, and extreme weather impacts. The data is then converted into a DataFrame and saved to an Azure Blob Storage container.
+# MAGIC
 
 # COMMAND ----------
 

@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %md 
-# MAGIC #Import necessary PySpark functions for data manipulation
+# MAGIC #Import necessary library
 # MAGIC
 
 # COMMAND ----------
